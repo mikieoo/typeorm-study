@@ -2,7 +2,7 @@ import { Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from './entity/user.entity';
-import { Repository } from 'typeorm';
+import { Equal, ILike, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { ProfileModel } from './entity/profile.entity';
 import { PostModel } from './entity/post.entity';
 import { TagModel } from './entity/tag.entity';
@@ -21,19 +21,72 @@ export class AppController {
   ) {}
 
   @Post('users')
-  postUser() {
-    return this.userRepository.save({
-      // title: 'test title'
-    });
+  async postUser() {
+    for (let i = 0; i < 100; i++) {
+      await this.userRepository.save({
+        email: `user-${i}@gmail.com`,
+      });
+    }
   }
 
   @Get('users')
   getUsers() {
     return this.userRepository.find({
-      relations: {
-        profile: true,
-        posts: true,
+      where: {
+        // 아닌 경우 가져오기
+        // id: Not(1)
+        // 적은 경우 가져오기
+        // id: LessThan(30)
+        // 적은 경우 or 같은 경우
+        // id: LessThanOrEqual(30)
+        // 많은 경우
+        // id: MoreThan(30)
+        // 많거나 같은 경우
+        // id: MoreThanOrEqual(30)
+        // 같은 경우
+        // id: Equal(30)
+        // 유사값
+        // email: Like('%gmail')
+        // 대문자 소문자 구분 안하는 유사값
+        // email: ILike('%GMAIL')
+        // 사이값
+        // id: Between(10, 15),
+        // 해당되는 여러개의 값
+        // id: In([1, 3, 5, 7, 99])
+        // ID가 null인 경우 가져오기기
+        // id: IsNull()
       }
+      // 어떤 프로퍼티를 선택할지
+      // select를 정의하지 않으면 모든 프로퍼티를 가져온다
+      // select를 정의하면 정의된 프로퍼티들만 가져온다
+      // select: {
+      //   id: true,
+      //   createdAt: true,
+      //   updatedAt: true,
+      //   profile: {
+      //     id: true
+      //   }
+      // },
+      // 필터링할 조건을 입력하게된다
+      // 리스트 안에 같이 묶인 요소들은 and 조건이 되고
+      // {} 중괄호로 따로 묶인 요소들은 or 조건이 다다
+      // where: {
+      //   version: 1
+      // },
+      // 관계를 가져오는 법
+      // relations: {
+      //   profile: true,
+      // },
+      // 오름차 내림차
+      // ASC -> 오름차
+      // DESC -> 내림차
+      // order: {
+      //   id: 'ASC',
+      // },
+      // 처음 몇개를 제외할지
+      // skip: 0,
+      // 데이터를 몇개를 가져올지 
+      // take: 0
     });
   }
 
